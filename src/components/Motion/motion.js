@@ -3,20 +3,20 @@ import { Motion, spring } from 'react-motion';
 
 export default class MyMotion extends Component {
   state = {
-    height: 40
+    height: 40,
   }
 
-  animate = () => {
-    this.setState((state) => ({ height: state.height === 240 ? 40 : 240 }))
-  }
+  animate = () => (
+    this.setState(state => ({ height: state.height === 240 ? 40 : 240 }))
+  )
 
   render() {
     return (
       <div className="App">
         <div style={styles.button} onClick={this.animate}>Animate</div>
         <Motion style={{ height: spring(this.state.height) }}>
-          {
-            ({ height }) => <div style={ Object.assign({}, styles.menu, { height }) }>
+          {({ height }) => (
+            <div style={Object.assign({}, styles.menu, { height })}>
               <p style={styles.selection}>Selection 1</p>
               <p style={styles.selection}>Selection 2</p>
               <p style={styles.selection}>Selection 3</p>
@@ -24,7 +24,7 @@ export default class MyMotion extends Component {
               <p style={styles.selection}>Selection 5</p>
               <p style={styles.selection}>Selection 6</p>
             </div>
-          }
+          )}
         </Motion>
       </div>
     );
@@ -60,5 +60,5 @@ const styles = {
     backgroundColor: '#ffc107',
     marginLeft: 'auto',
     marginRight: 'auto',
-  }
-}
+  },
+};

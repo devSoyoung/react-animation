@@ -237,3 +237,99 @@ const styles = {
 `<Motion>`에서 함수를 호출해서 넘겨줄 때는 객체로 전달해줘야 한다. 안그러면 작동을 안했다.
 
 더 자세한 사용법이나 예제에 대해서는 [여기](https://github.com/chenglou/react-motion)를 참고하면 될 것 같다.
+
+## Animated Library
+
+리액트 네이티브에서 사용하는 것과 같은 Animated 라이브러리를 사용한다. 기본적인 아이디어는 개발자가 선언적으로 애니메이션을 만들고, 일어나는 효과들을 객체로 컨트롤 할 수 있다는 것. **장점**은 크로스 플랫폼을 지원하고, 리액트 네이티브에서 매우 안정적으로 사용되고 있다는 점. interpolate method를 통해 하나의 값을 여러 개의 스타일에 interpolate할 수 있다(이해 못했음). Easing 프로퍼티를 여러 군데 쉽게 삽입해서 사용할 수 있다(얘도 이해 못했음).
+
+**단점**은 웹 버전에서 100% 안정적이지 않다는 점. (옛날 브라우저, auto-prefixing, 퍼포먼스 이슈가 있음) 리액트 네이티브에서 사용해보지 않았다면 API를 새로 배워야 한다는 점.
+
+### 예제에 대한 설명(animated.js) 
+*잘 이해가 안됨*
+```js
+import React, { Component } from 'react';
+import Animated from 'animated/lib/targets/react-dom';
+import Easing from 'animated/lib/Easing';
+
+export default class MyAnimated extends Component {
+  animatedValue = new Animated.Value(0)
+
+  animate = () => {
+    this.animatedValue.setValue(0);
+    Animated.timing(
+      this.animatedValue,
+      {
+        toValue: 1,
+        duration: 1000,
+        easing: Easing.elastic(1),
+      },
+    ).start();
+  }
+
+  render() {
+    const marginLeft = this.animatedValue.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-120, 0],
+    });
+    return (
+      <div className="App">
+        <div style={styles.button} onClick={this.animate}>Animate</div>
+        <Animated.div
+          style={
+            Object.assign(
+              {},
+              styles.box,
+              { opacity: this.animatedValue, marginLeft },
+            )}
+        >
+          <p>Thanks for your submission!</p>
+        </Animated.div>
+      </div>
+    );
+  }
+}
+
+const styles = {
+  button: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    display: 'flex',
+    cursor: 'pointer',
+    width: 200,
+    height: 45,
+    border: 'none',
+    borderRadius: 4,
+    backgroundColor: '#ffc107',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+  },
+  box: {
+    border: '1px solid #ddd',
+    marginTop: 10,
+    width: 400,
+    height: 45,
+    padding: 10,
+  },
+};
+```
+
+Animated 라이브러리에서 Animated와 Easing을 import한다. new Animated.Value(0)을 통해 새 클래스를 생성하고, 기본 값을 0으로 지정한다.
+
+`animate` method를 통해서 애니메이션을 조작한다. `Animated.timing`을 호출해서 `this.animatedValue`의 첫 번째 argument를, configuration object를 두 번째 argument로 넘겨준다.
+
+configuration object에는 애니메이션의 마지막 value인 toValue, duration(애니메이션 재생시간), easing property(적용하고자 하는)를 가진다.
+
+`interpolate`를 이용해서 marginLeft라는 새로운 값을 만들고, 애니메이션에 가져다 쓴다.(어떤 애니메이션에나 자유롭게 가져다 쓸 수 있는 값이다.) `interpolate`는 input range, output range를 가지는 configuration object를 취한다. input, output을 기초로 새로운 값을 만들 수 있다.
+
+## Velocity React Library
+현재 존재하는 Velocity(Velocity.js, 애니메이션 엔진, jQuery의 $.animate()와 같은 역할) DOM 라이브러리를 기반으로 한다. **장점**은 사용하기 매우 쉽고, API가 심플하고 직관적이다. React Motion에 비해 적용하기 쉽다. **단점**은 크로스 플랫폼을 지원하지 않는 것.
+
+### 기본적인 API 사용 방법
+
+    <VelocityComponent
+      animation={{ opacity: this.state.showSubComponent ? 1 : 0 }}
+      duration={500}
+    >
+      <MySubComponent />
+    </VelocityComponent>
+
